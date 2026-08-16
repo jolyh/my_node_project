@@ -1,0 +1,20 @@
+{
+  "name": "my_node_project",
+  "version": "1.0.0",
+  "description": "Basic project in node js with express for routing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No tests configured\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://localhost:26831/jolyh/my_node_project"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
