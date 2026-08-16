@@ -17,7 +17,7 @@ jobs:
 
       - name: Validate repository basics
         run: |
-          test -s README.md
+          test -s README.md || (echo "README.md is missing or empty." && exit 1)
 
       - name: Setup Node.js
         if: ${{ hashFiles('package.json') != '' }}
