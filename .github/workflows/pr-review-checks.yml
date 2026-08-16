@@ -41,4 +41,4 @@ jobs:
 
       - name: Run tests
         if: ${{ hashFiles('package.json') != '' }}
-        run: npm test --if-present
+        run: npm run --if-present test
