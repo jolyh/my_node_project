@@ -8,3 +8,10 @@ Basic Node.js project using Express for routing.
 npm install
 npm start
 ```
+
+or 
+
+```bash
+npm install
+npm run nodemon
+```

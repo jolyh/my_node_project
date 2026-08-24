@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "Basic project in node js with express for routing",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"No tests configured\""
+    "start": "node --env-file=.env index.js",
+    "nodemon": "nodemon --env-file=.env --trace-warnings --trace-uncaught index.js",
+    "test": "node --env-file=.env --test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -15,6 +19,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.2.1"
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.23.3",
+    "nodemon": "^3.1.14",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^2.0.1",
+    "eslint": "^10.9.0",
+    "eslint-plugin-n": "^18.3.0",
+    "globals": "^17.11.0",
+    "supertest": "^7.2.2"
   }
 }

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Page</title>
+    <link rel="stylesheet" href="/client/css/global.css">
+</head>
+
+<body>
+    <header>
+        <h1>My Node Project</h1>
+    </header>
+    <main id="app">
+        <section class="card card-wide">
+            <h2>Users</h2>
+            <div class="form-actions">
+                <button class="btn" @click="listUsers">List Users</button>
+                <button class="btn" @click="createUser">Create User</button>
+            </div>
+
+            <ul class="list" v-if="users.length">
+                <li class="list-item" v-for="user in users" :key="user.id">
+                    <span>#{{ user.id }} - {{ user.username }} ({{ user.email }})</span>
+                    <span class="form-actions">
+                        <button class="btn" @click="getUser(user.id)">Get</button>
+                        <button class="btn" @click="updateUser(user.id)">Update</button>
+                        <button class="btn btn-danger" @click="deleteUser(user.id)">Delete</button>
+                    </span>
+                </li>
+            </ul>
+        </section>
+        <section class="card card-wide" v-if="currentUser">
+            <h2>My profile</h2>
+            <dl class="profile-details">
+                <div>
+                    <dt>Name</dt>
+                    <dd>{{ currentUser.name }}</dd>
+                </div>
+                <div>
+                    <dt>Email</dt>
+                    <dd>{{ currentUser.email }}</dd>
+                </div>
+                <div>
+                    <dt>Role</dt>
+                    <dd>{{ currentUser.role }}</dd>
+                </div>
+            </dl>
+        </section>
+        <p v-if="currentUserError" class="message message-error">{{ currentUserError }}</p>
+    </main>
+    <footer>
+        <p>&copy; 2024 My Node Project. All rights reserved.</p>
+    </footer>
+
+    <script src="/client/assets/scripts/api.js"></script>
+    <script nonce="%%CSP_NONCE%%" src="/client/assets/external/vue.runtime.global.js"></script>
+    <script nonce="%%CSP_NONCE%%">
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    users: [],
+                    currentUser: null,
+                    currentUserError: ""
+                };
+            },
+            mounted() {
+                this.loadCurrentUser();
+            },
+            methods: {
+                async loadCurrentUser() {
+                    try {
+                        const result = await api.users.me();
+                        this.currentUser = result.user;
+                    } catch (error) {
+                        console.error("Current user lookup failed:", error);
+                        try {
+                            await api.auth.logout();
+                        } finally {
+                            window.location.replace("/login.html");
+                        }
+                    }
+                },
+                async listUsers() {
+                    const result = await api.users.list();
+                    this.users = result.users;
+                    console.log("List users response JSON:", result);
+                },
+                async createUser() {
+                    const result = await api.users.create({
+                        name: "Test User",
+                        email: "test@example.com",
+                        password: "password123"
+                    });
+                    console.log("Create user response JSON:", result);
+                    await this.listUsers();
+                },
+                async getUser(id) {
+                    const result = await api.users.get(id);
+                    console.log("Get user response JSON:", result);
+                },
+                async updateUser(id) {
+                    const result = await api.users.update(id, {
+                        name: "Updated User",
+                        email: "updated@example.com",
+                        password: "newpassword123"
+                    });
+                    console.log("Update user response JSON:", result);
+                    await this.listUsers();
+                },
+                async deleteUser(id) {
+                    const result = await api.users.remove(id);
+                    console.log("Delete user response JSON:", result);
+                    await this.listUsers();
+                }
+            }
+        }).mount("#app");
+    </script>
+</body>
+
+</html>

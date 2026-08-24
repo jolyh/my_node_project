@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account access</title>
+    <link rel="stylesheet" href="/client/css/global.css">
+</head>
+
+<body>
+    <header>
+        <h1>My Node Project</h1>
+    </header>
+    <main id="app">
+        <section class="card auth-card">
+            <div class="auth-heading">
+                <p class="eyebrow">My Node Project</p>
+                <h1>{{ mode === "login" ? "Welcome back" : "Create your account" }}</h1>
+                <p class="auth-description">{{ mode === "login" ? "Sign in to continue." : "Join the project with a few details." }}</p>
+            </div>
+            <div class="auth-switch" role="tablist" aria-label="Account access">
+                <button type="button" class="auth-switch-button" :class="{ active: mode === 'login' }" @click="switchMode('login')" role="tab" :aria-selected="mode === 'login'">Log in</button>
+                <button type="button" class="auth-switch-button" :class="{ active: mode === 'signup' }" @click="switchMode('signup')" role="tab" :aria-selected="mode === 'signup'">Sign up</button>
+            </div>
+            <form v-if="mode === 'login'" @submit.prevent="login">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input id="login-email" type="email" v-model="loginEmail" placeholder="you@example.com" autocomplete="email" required />
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="password-field">
+                        <input id="login-password" :type="showLoginPassword ? 'text' : 'password'" v-model="loginPassword" minlength="8" autocomplete="current-password" required />
+                        <button type="button" class="password-toggle" @click="showLoginPassword = !showLoginPassword" :aria-label="showLoginPassword ? 'Hide password' : 'Show password'">{{ showLoginPassword ? "Hide" : "Show" }}</button>
+                    </div>
+                </div>
+                <p v-if="loginError" class="message message-error">{{ loginError }}</p>
+                <button type="submit" class="btn btn-primary btn-block">Log in</button>
+            </form>
+            <form v-else @submit.prevent="signup">
+                <div class="form-group">
+                    <label for="signup-name">Name</label>
+                    <input id="signup-name" type="text" v-model="signupName" placeholder="Your name" autocomplete="name" required />
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input id="signup-email" type="email" v-model="signupEmail" placeholder="you@example.com" autocomplete="email" required />
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <div class="password-field">
+                        <input id="signup-password" :type="showSignupPassword ? 'text' : 'password'" v-model="signupPassword" minlength="8" autocomplete="new-password" required />
+                        <button type="button" class="password-toggle" @click="showSignupPassword = !showSignupPassword" :aria-label="showSignupPassword ? 'Hide password' : 'Show password'">{{ showSignupPassword ? "Hide" : "Show" }}</button>
+                    </div>
+                </div>
+                <p v-if="signupError" class="message message-error">{{ signupError }}</p>
+                <p v-if="signupSuccess" class="message message-success">{{ signupSuccess }}</p>
+                <button type="submit" class="btn btn-primary btn-block">Create account</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 My Node Project. All rights reserved.</p>
+    </footer>
+
+
+    <script src="/client/assets/scripts/api.js"></script>
+    <script nonce="%%CSP_NONCE%%" src="/client/assets/external/vue.runtime.global.js"></script>
+    <script nonce="%%CSP_NONCE%%">
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    mode: "login",
+                    loginEmail: "",
+                    loginPassword: "",
+                    signupName: "",
+                    signupEmail: "",
+                    signupPassword: "",
+                    showLoginPassword: false,
+                    showSignupPassword: false,
+                    loginError: "",
+                    signupError: "",
+                    signupSuccess: ""
+                };
+            },
+            methods: {
+                async login() {
+                    this.loginError = "";
+                    try {
+                        const result = await api.auth.login(this.loginEmail, this.loginPassword);
+                        console.log("Login response JSON:", result);
+                        window.location.href = "/users";
+                    } catch (error) {
+                        console.error("Login failed:", error);
+                        this.loginError = "Login failed. Check your credentials.";
+                    }
+                },
+                async signup() {
+                    this.signupError = "";
+                    this.signupSuccess = "";
+                    try {
+                        await api.auth.signup(this.signupName, this.signupEmail, this.signupPassword);
+                        this.signupSuccess = "Account created successfully. You can now log in.";
+                        this.signupName = "";
+                        this.signupEmail = "";
+                        this.signupPassword = "";
+                    } catch (error) {
+                        console.error("Signup failed:", error);
+                        this.signupError = error.message || "Signup failed. Check your details.";
+                    }
+                },
+                switchMode(mode) {
+                    this.mode = mode;
+                    this.loginError = "";
+                    this.signupError = "";
+                    this.signupSuccess = "";
+                }
+            }
+        }).mount("#app");
+    </script>
+</body>
+
+</html>

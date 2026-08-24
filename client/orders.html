@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Page</title>
+    <link rel="stylesheet" href="/client/css/global.css">
+</head>
+<body>
+    <header>
+        <h1>Orders</h1>
+    </header>
+
+    <main id="app">
+        <section class="card card-wide">
+            <h2>Order actions</h2>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" @click="listOrders">List all orders</button>
+            </div>
+
+            <div class="form-group">
+                <label for="orderId">Order ID</label>
+                <input id="orderId" v-model="orderId" placeholder="e.g. 1" />
+                <div class="form-actions">
+                    <button class="btn" @click="getOrderById">Get order by ID</button>
+                    <button class="btn btn-danger" @click="deleteOrderById">Delete order</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="userId">User ID</label>
+                <input id="userId" v-model="userId" placeholder="e.g. 1" />
+                <div class="form-actions">
+                    <button class="btn" @click="getOrdersByUserId">Get orders by user ID</button>
+                    <button class="btn" @click="createOrderForUser">Create order for user</button>
+                    <button class="btn btn-danger" @click="deleteOrderForUser">Delete order for user</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="orderDate">Order delivery date</label>
+                <input id="orderDate" v-model="orderDate" placeholder="2026-08-20" />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input id="description" v-model="description" placeholder="Order description" />
+            </div>
+
+            <p v-if="statusMessage" :class="['message', statusType === 'error' ? 'message-error' : 'message-success']">{{ statusMessage }}</p>
+        </section>
+
+        <section class="card card-wide">
+            <h2>Orders</h2>
+            <ul class="list" v-if="orders.length">
+                <li class="list-item" v-for="order in orders" :key="order.id">
+                    <span>#{{ order.id }} - User #{{ order.user_id }} - {{ order.description }} - {{ order.created_at }} - Delivery: {{ order.order_date }}</span>
+                    <span class="form-actions">
+                        <button class="btn" @click="getOrderById(order.id)">Get</button>
+                        <button class="btn btn-danger" @click="deleteOrderById(order.id)">Delete</button>
+                    </span>
+                </li>
+            </ul>
+            <p v-else>No orders found.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 My Node Project. All rights reserved.</p>
+    </footer>
+
+    <script src="/client/assets/scripts/api.js"></script>
+    <script nonce="%%CSP_NONCE%%" src="/client/assets/external/vue.runtime.global.js"></script>
+    <script nonce="%%CSP_NONCE%%">
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    orderId: "",
+                    userId: "",
+                    orderDate: "",
+                    description: "",
+                    orders: [],
+                    statusMessage: "",
+                    statusType: "success"
+                };
+            },
+            methods: {
+                setStatus(message, type = "success") {
+                    this.statusMessage = message;
+                    this.statusType = type;
+                },
+                async listOrders() {
+                    try {
+                        const result = await api.orders.list();
+                        this.orders = result.orders || [];
+                        this.setStatus(`Loaded ${this.orders.length} orders.`);
+                    } catch (error) {
+                        console.error("List orders failed:", error);
+                        this.setStatus("Unable to list orders.", "error");
+                    }
+                },
+                async getOrderById() {
+                    const id = this.orderId;
+                    if (!id) {
+                        this.setStatus("Please enter an order ID.", "error");
+                        return;
+                    }
+
+                    try {
+                        console.log(`Fetching order with ID: ${id}`);
+                        const result = await api.orders.get(id);
+                        this.orders = result.order
+                        this.setStatus(`Loaded order #${id}.`);
+                    } catch (error) {
+                        console.error("Get order by ID failed:", error);
+                        this.setStatus(`Order #${id} not found.`, "error");
+                    }
+                },
+                async getOrdersByUserId() {
+                    const userId = this.userId;
+                    if (!userId) {
+                        this.setStatus("Please enter a user ID.", "error");
+                        return;
+                    }
+
+                    try {
+                        const result = await api.users.orders(userId);
+                        this.orders = result.orders || [];
+                        this.setStatus(`Loaded orders for user #${userId}.`);
+                    } catch (error) {
+                        console.error("Get order by user ID failed:", error);
+                        this.setStatus(`No orders found for user #${userId}.`, "error");
+                    }
+                },
+                async createOrderForUser() {
+                    const userId = this.userId;
+                    if (!userId) {
+                        this.setStatus("Enter the user ID before creating an order.", "error");
+                        return;
+                    }
+
+                    try {
+
+                        const order_date = this.orderDate || Date.now(); // Default to today's date if not provided
+                        const result = await api.users.createOrder(userId, {
+                            description: this.description || "Sample order",
+                            order_date: order_date // Default to today's date if not provided,
+                        });
+                        this.setStatus(`Created order #${result.order.id} for user #${userId}.`);
+                        await this.listOrders();
+                    } catch (error) {
+                        console.error("Create order failed:", error);
+                        this.setStatus("Create order failed.", "error");
+                    }
+                },
+                async deleteOrderById(id = this.orderId) {
+                    if (!id) {
+                        this.setStatus("Please enter an order ID to delete.", "error");
+                        return;
+                    }
+
+                    try {
+                        await api.orders.remove(id);
+                        this.setStatus(`Deleted order #${id}.`);
+                        await this.listOrders();
+                    } catch (error) {
+                        console.error("Delete order failed:", error);
+                        this.setStatus(`Could not delete order #${id}.`, "error");
+                    }
+                },
+                async deleteOrderForUser() {
+                    const userId = this.userId;
+                    const orderId = this.orderId;
+
+                    if (!userId || !orderId) {
+                        this.setStatus("Enter both user ID and order ID.", "error");
+                        return;
+                    }
+
+                    try {
+                        await api.users.removeOrder(userId, orderId);
+                        this.setStatus(`Deleted order #${orderId} for user #${userId}.`);
+                        await this.listOrders();
+                    } catch (error) {
+                        console.error("Delete user order failed:", error);
+                        this.setStatus(`Could not delete order #${orderId} for user #${userId}.`, "error");
+                    }
+                }
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>
+

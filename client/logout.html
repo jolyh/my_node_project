@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="10;url=/login.html">
+    <title>Logging out</title>
+    <link rel="stylesheet" href="/client/css/global.css">
+</head>
+
+<body>
+    <main class="auth-card" id="logout-page" aria-live="polite">
+        <section class="card">
+            <h1>Signing you out</h1>
+            <p id="logout-message">Removing your session...</p>
+        </section>
+    </main>
+
+    <script src="/client/assets/scripts/api.js"></script>
+    <script>
+        const message = document.querySelector("#logout-message");
+
+        api.auth.logout()
+            .then(() => {
+                message.textContent = "You have been signed out. Redirecting to login...";
+                setTimeout(() => {
+                    window.location.replace("/login.html");
+                }, 5000);
+            })
+            .catch(() => {
+                message.textContent = "Your local session was removed. Redirecting to login...";
+                setTimeout(() => {
+                    window.location.replace("/login.html");
+                }, 5000);
+            });
+    </script>
+</body>
+
+</html>

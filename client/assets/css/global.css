@@ -1,0 +1,295 @@
+:root {
+    --color-bg: #f4f5f7;
+    --color-surface: #ffffff;
+    --color-text: #1f2430;
+    --color-muted: #6b7280;
+    --color-border: #d9dce1;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-danger: #ef4444;
+    --color-danger-hover: #dc2626;
+    --radius: 8px;
+    --spacing: 1rem;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--color-bg);
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+}
+
+header, footer {
+    padding: var(--spacing);
+    text-align: center;
+    color: var(--color-muted);
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing);
+    gap: var(--spacing);
+}
+
+/* Generic card container, reusable across pages */
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: calc(var(--spacing) * 1.5);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
+}
+
+.card + .card {
+    margin-top: var(--spacing);
+}
+
+.card h2 {
+    margin: 0;
+}
+
+.auth-card {
+    max-width: 440px;
+}
+
+.auth-heading h1 {
+    margin: 0;
+    font-size: 1.75rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.35rem;
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.auth-description {
+    margin: 0.35rem 0 0;
+    color: var(--color-muted);
+}
+
+.auth-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background: var(--color-bg);
+    border-radius: var(--radius);
+}
+
+.auth-switch-button {
+    padding: 0.55rem;
+    border: 0;
+    border-radius: calc(var(--radius) - 2px);
+    background: transparent;
+    color: var(--color-muted);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.auth-switch-button.active {
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Wider variant for cards holding tabular/list content */
+.card-wide {
+    max-width: 640px;
+}
+
+.profile-details {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.profile-details > div {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.profile-details > div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.profile-details dt {
+    color: var(--color-muted);
+    font-weight: 600;
+}
+
+.profile-details dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Forms */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: var(--spacing);
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-muted);
+}
+
+.form-group input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--color-border);
+    color: var(--color-text);
+    transition: background 0.15s ease;
+}
+
+.btn:hover {
+    filter: brightness(0.95);
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-hover);
+}
+
+.btn-danger {
+    background: var(--color-danger);
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: var(--color-danger-hover);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Error / status messages */
+.message {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+}
+
+.message-error {
+    background: #fee2e2;
+    color: var(--color-danger-hover);
+}
+
+.message-success {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+/* Simple list, reusable for any data listing */
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.list-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.list-item > span:first-child {
+    flex: 1 1 100%;
+    min-width: 0;
+}
+
+.list-item .form-actions {
+    flex-wrap: wrap;
+}
+
+.password-field {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.password-field input {
+    min-width: 0;
+    flex: 1;
+}
+
+.password-toggle {
+    padding: 0 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font: inherit;
+    cursor: pointer;
+}
