@@ -1,0 +1,42 @@
+services:
+  # MySQL Database Service
+  db:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=TesT@Dogg8
+      - MYSQL_DATABASE=my_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # Node.js Backend Service
+  backend:
+    build: ./internal
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=TesT@Dogg8
+      - DB_NAME=my_db
+    depends_on:
+      - db
+
+  # Vue.js Vite Frontend Service
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

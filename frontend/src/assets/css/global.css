@@ -37,6 +37,88 @@ header, footer {
     color: var(--color-muted);
 }
 
+.app-header {
+    padding: 0;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    text-align: left;
+}
+
+.app-header__content {
+    width: min(100% - 2rem, 1160px);
+    min-height: 4.5rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.app-header__brand,
+.app-header__navigation a,
+.app-header__logout {
+    color: inherit;
+    text-decoration: none;
+}
+
+.app-header__brand {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.app-header__logo {
+    width: 2.25rem;
+    height: 2.25rem;
+    object-fit: contain;
+}
+
+.app-header__navigation {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.app-header__navigation a,
+.app-header__logout {
+    padding: 0.5rem 0.7rem;
+    border-radius: calc(var(--radius) - 2px);
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.app-header__navigation a:hover,
+.app-header__navigation a.router-link-exact-active,
+.app-header__logout:hover {
+    background: #eff6ff;
+    color: var(--color-primary-hover);
+}
+
+.app-header__account {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.app-header__user {
+    max-width: 12rem;
+    overflow: hidden;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-header__logout {
+    color: var(--color-danger-hover);
+}
+
 main {
     flex: 1;
     display: flex;
@@ -369,5 +451,30 @@ main {
     .filter-form {
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: end;
+    }
+}
+
+@media (max-width: 639px) {
+    .app-header__content {
+        width: min(100% - 1.5rem, 1160px);
+        min-height: 0;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+    }
+
+    .app-header__navigation {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.1rem;
+    }
+
+    .app-header__account {
+        gap: 0.1rem;
+    }
+
+    .app-header__user {
+        display: none;
     }
 }

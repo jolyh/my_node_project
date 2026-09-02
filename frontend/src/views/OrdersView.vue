@@ -120,10 +120,10 @@
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
-import api from '../assets/scripts/api.js'
+import api from '../api/api.js'
 import { useAsyncAction } from '../composables/useAsyncAction.js'
-import session from '../assets/scripts/session.js'
-import navigation from '../assets/scripts/navigation.js'
+import session from '../stores/session.js'
+import navigation from '../router/navigation.js'
 
 if (session.token.get() === null) {
   navigation.goToLogin();

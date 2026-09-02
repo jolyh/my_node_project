@@ -10,8 +10,8 @@
 </template>
 <script setup>
 
-import api from '../assets/scripts/api.js'
-import router from '../router.js'
+import api from '../api/api.js'
+import router from '../router/router.js'
 import { ref } from 'vue';
 
 const message = ref("Removing your session...");

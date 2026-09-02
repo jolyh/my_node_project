@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'      // The root layout shell
-import router from './router'    // Your routing rules
+import router from './router/router.js'    // Your routing rules
 
 const app = createApp(App)
 

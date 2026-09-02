@@ -53,8 +53,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import api from '../assets/scripts/api.js'
-import navigation from '../assets/scripts/navigation.js'
+import api from '../api/api.js'
+import navigation from '../router/navigation.js'
 
 const route = useRoute()
 const user = ref(null)

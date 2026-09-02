@@ -64,6 +64,7 @@
     </main>
     <footer>
       <button type="button" class="btn btn-secondary btn-quick-login" @click="quickLogin">Quick Login</button>
+      <button type="button" class="btn btn-secondary btn-quick-login" @click="quickLoginSystem">Quick Login System</button>
       <button type="button" class="btn btn-secondary btn-quick-signup" @click="quickCreateAccount">Quick Create Account</button>
       <p>&copy; 2024 My Node Project. All rights reserved.</p>
     </footer>
@@ -73,9 +74,9 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
-import api from '../assets/scripts/api.js'
-import session from '../assets/scripts/session.js'
-import navigation from '../assets/scripts/navigation.js'
+import api from '../api/api.js'
+import session from '../stores/session.js'
+import navigation from '../router/navigation.js'
 import { useAsyncAction } from '../composables/useAsyncAction.js'
 
 if (session.token.get() !== null) navigation.goToUsers();
@@ -113,6 +114,12 @@ const signupAction = useAsyncAction()
 const quickLogin = async () => {
   loginData.email = "toto@example.com";
   loginData.password = "toto1234";
+  await login(); 
+};
+
+const quickLoginSystem = async () => {
+  loginData.email = "system@example.com";
+  loginData.password = "system_password";
   await login(); 
 };
 

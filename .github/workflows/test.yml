@@ -1,0 +1,25 @@
+name: CI Tests
+
+on:
+  pull_request:
+    branches: [ "main" ] # Change to your default branch (e.g., master)
+
+jobs:
+  run-tests:
+    name: Run Automated Tests # <-- CRITICAL: Give your job a clear name
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run test suite
+        run: npm test  # <-- If this command fails (exit code non-zero), the job fails

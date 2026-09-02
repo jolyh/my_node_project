@@ -12,112 +12,117 @@
     <header>
         <h1>My Node Project</h1>
     </header>
-    <main id="app">
+    <main>
         <section class="card card-wide">
             <h2>Users</h2>
             <div class="form-actions">
-                <button class="btn" @click="listUsers">List Users</button>
-                <button class="btn" @click="createUser">Create User</button>
+                <button id="list-users" class="btn">List Users</button>
+                <button id="create-user" class="btn">Create User</button>
             </div>
 
-            <ul class="list" v-if="users.length">
-                <li class="list-item" v-for="user in users" :key="user.id">
-                    <span>#{{ user.id }} - {{ user.username }} ({{ user.email }})</span>
-                    <span class="form-actions">
-                        <button class="btn" @click="getUser(user.id)">Get</button>
-                        <button class="btn" @click="updateUser(user.id)">Update</button>
-                        <button class="btn btn-danger" @click="deleteUser(user.id)">Delete</button>
-                    </span>
-                </li>
-            </ul>
+            <ul id="users-list" class="list"></ul>
         </section>
-        <section class="card card-wide" v-if="currentUser">
+        <section id="profile" class="card card-wide" hidden>
             <h2>My profile</h2>
             <dl class="profile-details">
                 <div>
                     <dt>Name</dt>
-                    <dd>{{ currentUser.name }}</dd>
+                    <dd id="profile-name"></dd>
                 </div>
                 <div>
                     <dt>Email</dt>
-                    <dd>{{ currentUser.email }}</dd>
+                    <dd id="profile-email"></dd>
                 </div>
                 <div>
                     <dt>Role</dt>
-                    <dd>{{ currentUser.role }}</dd>
+                    <dd id="profile-role"></dd>
                 </div>
             </dl>
         </section>
-        <p v-if="currentUserError" class="message message-error">{{ currentUserError }}</p>
+        <p id="current-user-error" class="message message-error" hidden></p>
     </main>
     <footer>
         <p>&copy; 2024 My Node Project. All rights reserved.</p>
     </footer>
 
     <script src="/client/assets/scripts/api.js"></script>
-    <script nonce="%%CSP_NONCE%%" src="/client/assets/external/vue.runtime.global.js"></script>
     <script nonce="%%CSP_NONCE%%">
-        const { createApp } = Vue;
+        const usersList = document.querySelector("#users-list");
 
-        createApp({
-            data() {
-                return {
-                    users: [],
-                    currentUser: null,
-                    currentUserError: ""
-                };
-            },
-            mounted() {
-                this.loadCurrentUser();
-            },
-            methods: {
-                async loadCurrentUser() {
-                    try {
-                        const result = await api.users.me();
-                        this.currentUser = result.user;
-                    } catch (error) {
-                        console.error("Current user lookup failed:", error);
-                        try {
-                            await api.auth.logout();
-                        } finally {
-                            window.location.replace("/login.html");
-                        }
-                    }
-                },
-                async listUsers() {
-                    const result = await api.users.list();
-                    this.users = result.users;
-                    console.log("List users response JSON:", result);
-                },
-                async createUser() {
-                    const result = await api.users.create({
-                        name: "Test User",
-                        email: "test@example.com",
-                        password: "password123"
+        const renderUsers = (users) => {
+            usersList.replaceChildren(...users.map((user) => {
+                const item = document.createElement("li");
+                item.className = "list-item";
+                const details = document.createElement("span");
+                details.textContent = `#${user.id} - ${user.username || user.name} (${user.email})`;
+                const actions = document.createElement("span");
+                actions.className = "form-actions";
+                [["Get", () => getUser(user.id), "btn"], ["Update", () => updateUser(user.id), "btn"], ["Delete", () => deleteUser(user.id), "btn btn-danger"]]
+                    .forEach(([label, action, className]) => {
+                        const button = document.createElement("button");
+                        button.className = className;
+                        button.textContent = label;
+                        button.addEventListener("click", action);
+                        actions.append(button);
                     });
-                    console.log("Create user response JSON:", result);
-                    await this.listUsers();
-                },
-                async getUser(id) {
-                    const result = await api.users.get(id);
-                    console.log("Get user response JSON:", result);
-                },
-                async updateUser(id) {
-                    const result = await api.users.update(id, {
-                        name: "Updated User",
-                        email: "updated@example.com",
-                        password: "newpassword123"
-                    });
-                    console.log("Update user response JSON:", result);
-                    await this.listUsers();
-                },
-                async deleteUser(id) {
-                    const result = await api.users.remove(id);
-                    console.log("Delete user response JSON:", result);
-                    await this.listUsers();
+                item.append(details, actions);
+                return item;
+            }));
+        };
+
+        async function loadCurrentUser() {
+            try {
+                const result = await api.users.me();
+                document.querySelector("#profile-name").textContent = result.user.name;
+                document.querySelector("#profile-email").textContent = result.user.email;
+                document.querySelector("#profile-role").textContent = result.user.role;
+                document.querySelector("#profile").hidden = false;
+            } catch (error) {
+                console.error("Current user lookup failed:", error);
+                try {
+                    await api.auth.logout();
+                } finally {
+                    window.location.replace("/login.html");
                 }
             }
-        }).mount("#app");
+        }
+
+        async function listUsers() {
+            const result = await api.users.list();
+            renderUsers(result.users || []);
+            console.log("List users response JSON:", result);
+        }
+
+        async function createUser() {
+            const result = await api.users.create({ name: "Test User", email: "test@example.com", password: "password123" });
+            console.log("Create user response JSON:", result);
+            await listUsers();
+        }
+
+        async function getUser(id) {
+            const result = await api.users.get(id);
+            console.log("Get user response JSON:", result);
+        }
+
+        async function updateUser(id) {
+            const result = await api.users.update(id, {
+                name: "Updated User",
+                email: "updated@example.com",
+                password: "newpassword123"
+            });
+            console.log("Update user response JSON:", result);
+            await listUsers();
+        }
+
+        async function deleteUser(id) {
+            const result = await api.users.remove(id);
+            console.log("Delete user response JSON:", result);
+            await listUsers();
+        }
+
+        document.querySelector("#list-users").addEventListener("click", listUsers);
+        document.querySelector("#create-user").addEventListener("click", createUser);
+        loadCurrentUser();
     </script>
 </body>
 

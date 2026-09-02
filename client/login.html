@@ -12,50 +12,50 @@
     <header>
         <h1>My Node Project</h1>
     </header>
-    <main id="app">
+    <main>
         <section class="card auth-card">
             <div class="auth-heading">
                 <p class="eyebrow">My Node Project</p>
-                <h1>{{ mode === "login" ? "Welcome back" : "Create your account" }}</h1>
-                <p class="auth-description">{{ mode === "login" ? "Sign in to continue." : "Join the project with a few details." }}</p>
+                <h1 id="auth-title">Welcome back</h1>
+                <p id="auth-description" class="auth-description">Sign in to continue.</p>
             </div>
             <div class="auth-switch" role="tablist" aria-label="Account access">
-                <button type="button" class="auth-switch-button" :class="{ active: mode === 'login' }" @click="switchMode('login')" role="tab" :aria-selected="mode === 'login'">Log in</button>
-                <button type="button" class="auth-switch-button" :class="{ active: mode === 'signup' }" @click="switchMode('signup')" role="tab" :aria-selected="mode === 'signup'">Sign up</button>
+                <button id="login-tab" type="button" class="auth-switch-button active" role="tab" aria-selected="true">Log in</button>
+                <button id="signup-tab" type="button" class="auth-switch-button" role="tab" aria-selected="false">Sign up</button>
             </div>
-            <form v-if="mode === 'login'" @submit.prevent="login">
+            <form id="login-form">
                 <div class="form-group">
                     <label for="login-email">Email</label>
-                    <input id="login-email" type="email" v-model="loginEmail" placeholder="you@example.com" autocomplete="email" required />
+                    <input id="login-email" type="email" placeholder="you@example.com" autocomplete="email" required />
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
                     <div class="password-field">
-                        <input id="login-password" :type="showLoginPassword ? 'text' : 'password'" v-model="loginPassword" minlength="8" autocomplete="current-password" required />
-                        <button type="button" class="password-toggle" @click="showLoginPassword = !showLoginPassword" :aria-label="showLoginPassword ? 'Hide password' : 'Show password'">{{ showLoginPassword ? "Hide" : "Show" }}</button>
+                        <input id="login-password" type="password" minlength="8" autocomplete="current-password" required />
+                        <button id="login-password-toggle" type="button" class="password-toggle" aria-label="Show password">Show</button>
                     </div>
                 </div>
-                <p v-if="loginError" class="message message-error">{{ loginError }}</p>
+                <p id="login-error" class="message message-error" hidden></p>
                 <button type="submit" class="btn btn-primary btn-block">Log in</button>
             </form>
-            <form v-else @submit.prevent="signup">
+            <form id="signup-form" hidden>
                 <div class="form-group">
                     <label for="signup-name">Name</label>
-                    <input id="signup-name" type="text" v-model="signupName" placeholder="Your name" autocomplete="name" required />
+                    <input id="signup-name" type="text" placeholder="Your name" autocomplete="name" required />
                 </div>
                 <div class="form-group">
                     <label for="signup-email">Email</label>
-                    <input id="signup-email" type="email" v-model="signupEmail" placeholder="you@example.com" autocomplete="email" required />
+                    <input id="signup-email" type="email" placeholder="you@example.com" autocomplete="email" required />
                 </div>
                 <div class="form-group">
                     <label for="signup-password">Password</label>
                     <div class="password-field">
-                        <input id="signup-password" :type="showSignupPassword ? 'text' : 'password'" v-model="signupPassword" minlength="8" autocomplete="new-password" required />
-                        <button type="button" class="password-toggle" @click="showSignupPassword = !showSignupPassword" :aria-label="showSignupPassword ? 'Hide password' : 'Show password'">{{ showSignupPassword ? "Hide" : "Show" }}</button>
+                        <input id="signup-password" type="password" minlength="8" autocomplete="new-password" required />
+                        <button id="signup-password-toggle" type="button" class="password-toggle" aria-label="Show password">Show</button>
                     </div>
                 </div>
-                <p v-if="signupError" class="message message-error">{{ signupError }}</p>
-                <p v-if="signupSuccess" class="message message-success">{{ signupSuccess }}</p>
+                <p id="signup-error" class="message message-error" hidden></p>
+                <p id="signup-success" class="message message-success" hidden></p>
                 <button type="submit" class="btn btn-primary btn-block">Create account</button>
             </form>
         </section>
@@ -66,60 +66,76 @@
 
 
     <script src="/client/assets/scripts/api.js"></script>
-    <script nonce="%%CSP_NONCE%%" src="/client/assets/external/vue.runtime.global.js"></script>
     <script nonce="%%CSP_NONCE%%">
-        const { createApp } = Vue;
+        const loginForm = document.querySelector("#login-form");
+        const signupForm = document.querySelector("#signup-form");
+        const loginTab = document.querySelector("#login-tab");
+        const signupTab = document.querySelector("#signup-tab");
 
-        createApp({
-            data() {
-                return {
-                    mode: "login",
-                    loginEmail: "",
-                    loginPassword: "",
-                    signupName: "",
-                    signupEmail: "",
-                    signupPassword: "",
-                    showLoginPassword: false,
-                    showSignupPassword: false,
-                    loginError: "",
-                    signupError: "",
-                    signupSuccess: ""
-                };
-            },
-            methods: {
-                async login() {
-                    this.loginError = "";
-                    try {
-                        const result = await api.auth.login(this.loginEmail, this.loginPassword);
-                        console.log("Login response JSON:", result);
-                        window.location.href = "/users";
-                    } catch (error) {
-                        console.error("Login failed:", error);
-                        this.loginError = "Login failed. Check your credentials.";
-                    }
-                },
-                async signup() {
-                    this.signupError = "";
-                    this.signupSuccess = "";
-                    try {
-                        await api.auth.signup(this.signupName, this.signupEmail, this.signupPassword);
-                        this.signupSuccess = "Account created successfully. You can now log in.";
-                        this.signupName = "";
-                        this.signupEmail = "";
-                        this.signupPassword = "";
-                    } catch (error) {
-                        console.error("Signup failed:", error);
-                        this.signupError = error.message || "Signup failed. Check your details.";
-                    }
-                },
-                switchMode(mode) {
-                    this.mode = mode;
-                    this.loginError = "";
-                    this.signupError = "";
-                    this.signupSuccess = "";
-                }
+        const setMessage = (element, message) => {
+            element.textContent = message;
+            element.hidden = !message;
+        };
+
+        const switchMode = (mode) => {
+            const loginMode = mode === "login";
+            loginForm.hidden = !loginMode;
+            signupForm.hidden = loginMode;
+            loginTab.classList.toggle("active", loginMode);
+            signupTab.classList.toggle("active", !loginMode);
+            loginTab.setAttribute("aria-selected", String(loginMode));
+            signupTab.setAttribute("aria-selected", String(!loginMode));
+            document.querySelector("#auth-title").textContent = loginMode ? "Welcome back" : "Create your account";
+            document.querySelector("#auth-description").textContent = loginMode ? "Sign in to continue." : "Join the project with a few details.";
+            setMessage(document.querySelector("#login-error"), "");
+            setMessage(document.querySelector("#signup-error"), "");
+            setMessage(document.querySelector("#signup-success"), "");
+        };
+
+        const bindPasswordToggle = (input, button) => {
+            button.addEventListener("click", () => {
+                const visible = input.type === "text";
+                input.type = visible ? "password" : "text";
+                button.textContent = visible ? "Show" : "Hide";
+                button.setAttribute("aria-label", visible ? "Show password" : "Hide password");
+            });
+        };
+
+        loginTab.addEventListener("click", () => switchMode("login"));
+        signupTab.addEventListener("click", () => switchMode("signup"));
+        bindPasswordToggle(document.querySelector("#login-password"), document.querySelector("#login-password-toggle"));
+        bindPasswordToggle(document.querySelector("#signup-password"), document.querySelector("#signup-password-toggle"));
+
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            setMessage(document.querySelector("#login-error"), "");
+            try {
+                const result = await api.auth.login(document.querySelector("#login-email").value, document.querySelector("#login-password").value);
+                console.log("Login response JSON:", result);
+                window.location.href = "/users";
+            } catch (error) {
+                console.error("Login failed:", error);
+                setMessage(document.querySelector("#login-error"), "Login failed. Check your credentials.");
             }
-        }).mount("#app");
+        });
+
+        signupForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            setMessage(document.querySelector("#signup-error"), "");
+            setMessage(document.querySelector("#signup-success"), "");
+            try {
+                await api.auth.signup(
+                    document.querySelector("#signup-name").value,
+                    document.querySelector("#signup-email").value,
+                    document.querySelector("#signup-password").value
+                );
+                setMessage(document.querySelector("#signup-success"), "Account created successfully. You can now log in.");
+                signupForm.reset();
+            } catch (error) {
+                console.error("Signup failed:", error);
+                setMessage(document.querySelector("#signup-error"), error.message || "Signup failed. Check your details.");
+            }
+        });
     </script>
 </body>
 

@@ -1,6 +1,9 @@
 {
-  "name": "frontend",
-  "version": "0.0.0",
+  "name": "@project/frontend",
+  "version": "1.0.0",
+  "description": "Frontend for my_node_project",
+  "keywords": ["frontend", "nodejs", "vue", "vite"],
+  "author": "Arnaud Joly <arnaud.joly24@outlook.com>",
   "private": true,
   "type": "module",
   "scripts": {
