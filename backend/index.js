@@ -9,12 +9,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Import Database, Repositories, Services, Controllers
-import dbInstance from './database/dbInstance.js';
-import mainRouterInit from "./routers/router.js"
-import repositories from './repositories/repositories.js';
-import services from './services/services.js';
-import controllers from './controllers/controllers.js';
-import Logger from './utils/Logger.js';
+import dbInstance from '#database/db.instance';
+import mainRouterInit from "#routers/router";
+import repositories from '#repositories/repositories';
+import services from '#services/services';
+import controllers from '#controllers/controllers';
+import Logger from '#utils/Logger';
 
 //#region Database, Repositories, Services, Controllers
 Logger.systemInfo(`Audit logs enabled: ${process.env.WITH_AUDIT_LOGS === 'true'}`);

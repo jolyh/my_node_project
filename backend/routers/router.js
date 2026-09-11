@@ -1,8 +1,8 @@
 
-import apiRoutes from './api/apiRoutes.js';
-import webRoutes from './webRoutes.js';
-import requestMiddleware from '../middleware/requestMiddleware.js';
-import errorHandler from '../middleware/errorHandler.js';
+import apiRouter from '#routers/api.router';
+import webRouter from '#routers/web.router';
+import requestMiddleware from '#middleware/request.middleware';
+import errorHandler from '#middleware/error.middleware';
 
 const mainRouterInit = (
     express,
@@ -13,8 +13,8 @@ const mainRouterInit = (
 ) => {
 
     app.use(requestMiddleware);
-    apiRoutes(app, controllers);
-    webRoutes(app, express, baseDir);
+    apiRouter(app, controllers);
+    webRouter(app, express, baseDir);
     app.use(errorHandler(onCriticalError));
 
     return app

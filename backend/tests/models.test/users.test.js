@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import User from "../../models/users/user.js";
-import userRoles from "../../models/users/roles.js";
+import User from "#models/users/user";
+import userRoles from "#models/users/roles";
 import { currentUser, signupUser } from "./users.js";
 
 describe("User model", () => {
@@ -33,7 +33,7 @@ describe("User model", () => {
             name: signupUser.name,
             email: signupUser.email,
             password: signupUser.password,
-            role: userRoles.GUEST
+            role: userRoles.END_USER
         });
     });
 
@@ -55,10 +55,10 @@ describe("User model", () => {
     });
 
     it("sanitizes passwords and hides the guest role", () => {
-        const guest = User.sanitize({ id: 1, name: "Guest", password: "secret", role: userRoles.GUEST });
+        const endUser = User.sanitize({ id: 1, name: "End User", password: "secret", role: userRoles.END_USER });
         const admin = User.sanitize({ id: 2, name: "Admin", password: "secret", role: userRoles.ADMIN });
 
-        assert.deepEqual(guest, { id: 1, name: "Guest" });
+        assert.deepEqual(endUser, { id: 1, name: "End User" });
         assert.deepEqual(admin, { id: 2, name: "Admin", role: userRoles.ADMIN });
     });
 
@@ -66,7 +66,7 @@ describe("User model", () => {
         assert.equal(userRoles.toString(userRoles.SYSTEM), "system");
         assert.equal(userRoles.toString(userRoles.ADMIN), "admin");
         assert.equal(userRoles.toString(userRoles.USER), "user");
-        assert.equal(userRoles.toString(userRoles.GUEST), "guest");
+        assert.equal(userRoles.toString(userRoles.END_USER), "end_user");
         assert.equal(userRoles.toString(999), "unknown");
     });
 

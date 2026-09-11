@@ -12,22 +12,32 @@
   "workspaces": [
     "frontend",
     "backend",
-    "client"
+    "client",
+    "shared"
   ],
+  "imports": {
+    "#shared/*": "./shared/*.js"
+  },
   "scripts": {
     "install:all": "npm install",
     "dev:frontend": "npm run dev -w frontend",
     "dev:backend": "npm run dev -w backend",
+    "dev": "npm run dev --workspaces --if-present",
     "test:frontend": "npm run test -w frontend",
     "test:backend": "npm run test -w backend",
-    "dev": "npm run dev --workspaces --if-present",
+    "test:all": "npm test -w backend -w frontend",
     "build": "npm run build --workspaces --if-present",
-
     "clean": "rimraf node_modules package-lock.json backend/node_modules frontend/node_modules client/node_modules",
     "reset": "npm run clean && npm cache clean --force && npm install"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.5.0",
+    "@vue/tsconfig": "^0.9.1",
+    "prettier": "^3.0.0",
     "rimraf": "^5.0.0",
-    "prettier": "^3.0.0"
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2",
+    "vue-tsc": "^3.3.11"
   }
 }

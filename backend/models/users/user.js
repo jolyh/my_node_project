@@ -1,4 +1,4 @@
-import userRoles from "./roles.js";
+import userRoles from "#models/users/roles";
 
 const User = {
     // Create a new user object with default values
@@ -18,14 +18,14 @@ const User = {
             name: userData.name || '',
             email: userData.email || '',
             password: userData.password || '',
-            role: userData.role || userRoles.GUEST,
+            role: userData.role || userRoles.END_USER,
         };
     },
     forUpdate: (userData) => {
         return {
             name: userData.name || '',
             email: userData.email || '',
-            role: userData.role || userRoles.GUEST,
+            role: userData.role || userRoles.END_USER,
         };
     },
     /**

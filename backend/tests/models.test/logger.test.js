@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import AuditLogs from "../../models/logger/auditLogs.js";
+import AuditLogs from "#models/logger/auditLogs";
 import { auditLogToCreate, systemAuditLogToCreate } from "./logger.js";
 
 describe("AuditLogs model", () => {

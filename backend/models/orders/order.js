@@ -1,4 +1,4 @@
-import orderStatus from './status.js';
+import orderStatus from '#models/orders/status';
 
 const Order = {
     new: (data) => {
@@ -16,22 +16,22 @@ const Order = {
     },
     forCreation: (data) => {
         return {
-            user_id: data.userId || data.user_id,
-            product_id: data.productId || data.product_id,
-            quantity: data.quantity || data.quantity,
-            total_price: data.totalPrice || data.total_price,
+            user_id: data.userId,
+            product_id: data.productId,
+            quantity: data.quantity,
+            total_price: data.totalPrice,
             status: data.status ?? orderStatus.PENDING,
-            delivery_date: data.deliveryDate || data.delivery_date,
+            delivery_date: data.deliveryDate,
         };
     },
     forUpdate: (data) => {
         return {
-            user_id: data.userId || data.user_id,
-            product_id: data.productId || data.product_id,
-            quantity: data.quantity || data.quantity,
-            total_price: data.totalPrice || data.total_price,
+            user_id: data.userId,
+            product_id: data.productId,
+            quantity: data.quantity,
+            total_price: data.totalPrice,
             status: data.status ?? orderStatus.PENDING,
-            delivery_date: data.deliveryDate || data.delivery_date,
+            delivery_date: data.deliveryDate,
         };
     },
     sanitize: (data) => {

@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Front end script
 *vue.global.js
+
+# Local ignore folder
+ignore/**

@@ -1,5 +1,5 @@
-import auditLogTypes from '../models/logger/types.js';
-import AuditLogs from '../models/logger/auditLogs.js';
+import auditLogTypes from '#models/logger/types';
+import AuditLogs from '#models/logger/auditLogs';
 
 let auditLogService = null;
 const pendingEntries = [];
@@ -18,10 +18,16 @@ const write = (
         log: message,
         details: details,
     });
+
+    if (process.env.DEBUG === 'true') {
+        console.log("DEBUG", entry);
+    }
+
     if (!auditLogService) {
         pendingEntries.push(entry);
         return;
     }
+
     void auditLogService.create(entry).catch(() => {});
 };
 

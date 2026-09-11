@@ -1,22 +1,26 @@
 
-import UserRepository from './UserRepository.js';
-import OrderRepository from './OrderRepository.js';
-import AuditLogRepository from './AuditLogRepository.js';
-import { AppError, errorTypes } from '../errors/AppError.js';
+import UsersRepository from '#repositories/UsersRepository';
+import OrdersRepository from '#repositories/OrdersRepository';
+import AuditLogsRepository from '#repositories/AuditLogsRepository';
+import TasksRepository from '#repositories/TasksRepository';
+import { AppError, errorTypes } from '#errors/AppError';
 
 const initRepositories = async (dbInstance) => {
 
     const repositories = {};
 
     try {
-        const orderRepository = new OrderRepository(dbInstance);
-        repositories.orderRepository = orderRepository;
+        const ordersRepository = new OrdersRepository(dbInstance);
+        repositories.ordersRepository = ordersRepository;
 
-        const userRepository = new UserRepository(dbInstance);
-        repositories.userRepository = userRepository;
+        const usersRepository = new UsersRepository(dbInstance);
+        repositories.usersRepository = usersRepository;
 
-        const auditLogRepository = new AuditLogRepository(dbInstance);
-        repositories.auditLogRepository = auditLogRepository;
+        const auditLogsRepository = new AuditLogsRepository(dbInstance);
+        repositories.auditLogsRepository = auditLogsRepository;
+
+        const tasksRepository = new TasksRepository(dbInstance);
+        repositories.tasksRepository = tasksRepository;
 
         return repositories;
     } catch (error) {

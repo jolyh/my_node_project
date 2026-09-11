@@ -1,11 +1,10 @@
 
-import UserController from './users/UserController.js';
-import UsersController from './users/UsersController.js';
-import OrderController from './orders/OrderController.js';
-import OrdersController from './orders/OrdersController.js';
+import AuthController from '#controllers/AuthController';
+import UsersController from '#controllers/UsersController';
+import OrdersController from '#controllers/OrdersController';
+import TasksController from '#controllers/TasksController';
 
-import AuthController from './auth/AuthController.js';
-import { AppError, errorTypes } from '../errors/AppError.js';
+import { AppError, errorTypes } from '#errors/AppError';
 
 const controllers = async (services) => {
 
@@ -13,18 +12,21 @@ const controllers = async (services) => {
 
     try {
 
-        const orderController = new OrderController(services.orderService);
         const ordersController = new OrdersController(services.orderService);
-        controllers.orderController = orderController;
         controllers.ordersController = ordersController;
 
-        const userController = new UserController(services.userService, services.orderService);
-        const usersController = new UsersController(services.userService);
-        controllers.userController = userController;
+        const usersController = new UsersController(
+            services.userService, 
+            services.orderService,
+            services.taskService
+        );
         controllers.usersController = usersController;
 
         const loginController = new AuthController(services.authService);
         controllers.loginController = loginController;
+
+        const tasksController = new TasksController(services.taskService);
+        controllers.tasksController = tasksController;
 
         return controllers;
 

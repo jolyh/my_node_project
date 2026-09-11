@@ -1,65 +1,90 @@
-import userRoles from './userRoles.js';
-import { reactive } from 'vue';
 
-const state = reactive({
-    token: window.localStorage.getItem("jwtToken"),
-    user: JSON.parse(window.localStorage.getItem("currentUser") || "null")
-});
+import { reactive, watch } from 'vue'
+import { SESSION_STORAGE_KEY, isTokenExpired } from './session.utils'
 
-const token = {
-    get() {
-        return state.token;
-    },
-    set(token) {
-        window.localStorage.setItem("jwtToken", token);
-        state.token = token;
-    },
-    clear() {
-        window.localStorage.removeItem("jwtToken");
-        state.token = null;
-    },
-}
-
-const currentUser = {
-    get() {
-        return state.user;
-    },
-
-    // Utils
-    isEndUser() {
-        const user = currentUser.get();
-        return user && user.role === userRoles.USER;
-    },
-    isAdmin() {
-        const user = currentUser.get();
-        return user && user.role === userRoles.ADMIN;
-    },
-    isSystemAdmin() {
-        const user = currentUser.get();
-        return user && user.role === userRoles.SYSTEM;
-    },
-    // Session
-    set(user) {
-        window.localStorage.setItem("currentUser", JSON.stringify(user));
-        state.user = user;
-    },
-    clear() {
-        window.localStorage.removeItem("currentUser");
-        state.user = null;
+const savedSession = sessionStorage.getItem(SESSION_STORAGE_KEY)
+const initialData =
+  savedSession ? JSON.parse(savedSession)
+    : {
+      user: '',
+      token: '',
+      expireAt: null,
+      isAuthenticated: false,
+      theme: 1 // light
     }
-};
 
+const sessionState = reactive(initialData)
+
+watch(
+  sessionState,
+  (newValue) => {
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newValue))
+  },
+  { deep: true }
+)
+
+
+/**
+ * Session management object.
+ * Provides methods to manage user session, including login, logout, and session state retrieval.
+ * All of the session data is stored in the browser's sessionStorage and is reactive within the application.
+ * Any get will check for session expiration and automatically log out the user if the session has expired.
+ */
 const session = {
-    token : token,
-    currentUser : currentUser,
-    isAuthenticated() {
-        return !!token.get();
-    },
-    clear() {
-        console.log("Clearing session...");
-        token.clear();
-        currentUser.clear();
+  login(userData, tokenData, expireAt) {
+    sessionState.user = userData
+    sessionState.token = tokenData
+    sessionState.expireAt = expireAt
+    sessionState.isAuthenticated = true
+  },
+  logout() {
+    sessionState.user = null
+    sessionState.token = null
+    sessionState.expireAt = null
+    sessionState.isAuthenticated = false
+    sessionStorage.removeItem(SESSION_STORAGE_KEY) // Clear storage completely
+  },
+  /**
+   * Get the current session state.
+   * This method also checks if the session has expired and logs out the user if it has.
+   * @returns {object} The session state.
+   */
+  get() {
+    if (isTokenExpired(sessionState.expireAt)) {
+      console.warn('Session has expired. Logging out.');
+      session.logout();
     }
-};
+    return sessionState;
+  },
+  /**
+   * Get the user of the session.
+   * @returns {object|null} The user, or null if not set.
+   */
+  getUser() {
+    return session.get().user;
+  },
+  /**
+   * Get the token of the session.
+   * @returns {string|null} The token, or null if not set.
+   */
+  getToken() {
+    return session.get().token;
+  },
+  /**
+   * Check if the user is authenticated.
+   * This method also checks if the session has expired and logs out the user if it has.
+   * @returns {boolean} True if authenticated, false otherwise.
+   */
+  isAuthenticated() {
+    return session.get().isAuthenticated;
+  },
+  /**
+   * Get the expiration time of the session.
+   * @returns {Date|null} The expiration time, or null if not set.
+   */
+  getExpireAt() {
+    return session.get().expireAt;
+  },
+}
 
 export default session;

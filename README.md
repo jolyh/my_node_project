@@ -31,3 +31,10 @@ backend: docker run -p 3000:3000 --name my-running-app my-node-app
 frontend: docker run -p 5173:5173 --name my-app-frontend my-node-app
 
 compore: docker-compose up --build
+
+##Typescript
+
+Node: npm install typescript ts-node @types/node --save-dev 
+Express: npm install @types/express --save-dev    
+Vue: npm install -D typescript vue-tsc @types/node @vue/tsconfig
+Create tsconfig.json -> npx tsc --init

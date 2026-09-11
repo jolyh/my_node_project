@@ -16,7 +16,7 @@ const AuditLogs = {
             request_id: data.request_id ?? null,
             type: data.type ?? 0,
             log: data.log ?? '',
-            details: data.details ?? null,
+            details: data.details ?? '',
         };
     },
     toArray: (data) => {

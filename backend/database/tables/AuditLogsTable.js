@@ -1,6 +1,5 @@
-import { assertValidIdentifier } from "../identifier.js";
-import Logger from '../../utils/Logger.js';
-import QueryBuilder from "../QueryBuilder.js";
+import Table from "#database/tables/Table";
+import Logger from '#utils/Logger';
 
 const auditLogsColumns = {
     id: {
@@ -32,11 +31,12 @@ const auditLogsColumns = {
 };
 
 const auditLogsConstraints = {
-    fk_author: {
-        query: `CONSTRAINT fk_author
+    fk_audit_logs_author: {
+        query: `CONSTRAINT fk_audit_logs_author
                 FOREIGN KEY (author_id) 
                 REFERENCES users(id)
-                ON DELETE SET NULL`,
+                ON DELETE SET NULL 
+                ON UPDATE CASCADE`,
     },
     toArray: function () {
         return Object.values(this)
@@ -45,15 +45,13 @@ const auditLogsConstraints = {
     }
 };
 
-class AuditLogsTable {
+class AuditLogsTable extends Table {
 
     static auditLogsColumns = auditLogsColumns;
     static auditLogsConstraints = auditLogsConstraints;
 
     constructor(tableName = "audit_logs") {
-        assertValidIdentifier(tableName, 'table name');
-        this.tableName = tableName;
-        this.queryBuilder = new QueryBuilder(tableName);
+        super(tableName, auditLogsColumns, auditLogsConstraints);
     }
 
     setup = async (dbInstance) => {
@@ -65,25 +63,6 @@ class AuditLogsTable {
         }
     };
 
-    checkSelfExists = async (dbInstance) => {
-        const { query: checkQuery, values: checkValues } = this.queryBuilder.show().toSQL();
-        const [result] = await dbInstance.execute(checkQuery, checkValues);
-        return result.length > 0;
-    };
-
-    createSelf = async (dbInstance) => {
-        const { query, values } = this.queryBuilder
-            .create(auditLogsColumns.toArray(), auditLogsConstraints.toArray()).toSQL();
-        await dbInstance.execute(query, values);
-        Logger.systemInfo(`Audit logs table created successfully: ${this.tableName}`);
-    }
-
-    dropSelf = async (dbInstance) => {
-        const { query, values } = this.queryBuilder.drop().toSQL();
-        await dbInstance.execute(query, values);
-        Logger.systemInfo(`Audit logs table dropped successfully: ${this.tableName}`);
-    }
-
 }
 
-export { auditLogsColumns, AuditLogsTable };
+export default AuditLogsTable;

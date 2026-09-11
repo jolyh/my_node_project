@@ -1,0 +1,8 @@
+{
+  "name": "@project/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities for my_node_project",
+  "keywords": ["shared", "nodejs"],
+  "author": "Arnaud Joly <arnaud.joly24@outlook.com>",
+  "type": "module"
+}

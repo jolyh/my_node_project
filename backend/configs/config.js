@@ -1,15 +1,17 @@
-import dbConfig from './dbConfig.js';
+import dbConfig from '#configs/db.config';
+import jwtConfig from '#configs/jwt.config';
+
+import { UserConstraints } from '@project/shared/user.js';
 
 const config = Object.freeze({
     // User
-    MIN_NAME_LENGTH: 2,
-    MAX_NAME_LENGTH: 50,
-    MIN_PASSWORD_LENGTH: 8,
-    MAX_PASSWORD_LENGTH: 64,
+    MIN_NAME_LENGTH: UserConstraints.name.min,
+    MAX_NAME_LENGTH: UserConstraints.name.max,
+    MIN_PASSWORD_LENGTH: UserConstraints.password.min,
+    MAX_PASSWORD_LENGTH: UserConstraints.password.max,
 
     // JWT configuration
-    JWT_EXPIRATION: '1h', // Token expiration time
-    JWT_COOKIE_NAME: 'token', // Name of the cookie to store the JWT
+    jwt: jwtConfig,
 
     db : dbConfig
 });

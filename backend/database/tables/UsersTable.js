@@ -1,11 +1,10 @@
-import QueryBuilder from "../QueryBuilder.js";
-import { assertValidIdentifier } from "../identifier.js";
-import Logger from '../../utils/Logger.js';
-import userRoles from '../../models/users/roles.js';
-import hashUtils from '../../utils/hashUtils.js';
-import { AppError, errorTypes } from "../../errors/AppError.js";
+import Table from "#database/tables/Table";
+import Logger from '#utils/Logger';
+import userRoles from '#models/users/roles';
+import hashUtils from '#utils/hash.utils';
+import { AppError, errorTypes } from "#errors/AppError";
 
-const userColumns = {
+const usersColumns = {
     id: {
         query: "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY",
     },
@@ -43,15 +42,13 @@ const usersConstraints = {
     }
 };
 
-class UsersTable {
+class UsersTable extends Table {
 
-    static usersTableColumns = userColumns;
+    static usersTableColumns = usersColumns;
     static usersConstraints = usersConstraints;
 
     constructor(tableName = "users") {
-        assertValidIdentifier(tableName, 'table name');
-        this.tableName = tableName;
-        this.queryBuilder = new QueryBuilder(tableName);
+        super(tableName, usersColumns, usersConstraints);
     }
 
     setup = async (dbInstance) => {
@@ -86,26 +83,10 @@ class UsersTable {
         await this.createSystemUser(dbInstance);
     };
 
-    checkSelfExists = async (dbInstance) => {
-        const { query: checkQuery, values: checkValues } = this.queryBuilder.show().toSQL();
-        const [result] = await dbInstance.execute(checkQuery, checkValues);
-        return result.length > 0;
-    }
-
-    createSelf = async (dbInstance) => {
-        const { query, values } = this.queryBuilder.create(userColumns.toArray(), usersConstraints.toArray()).toSQL();
-        await dbInstance.execute(query, values);
-        Logger.systemInfo(`Users table created successfully: ${this.tableName}`);
-    }
-
-    dropSelf = async (dbInstance) => {
-        const { query, values } = this.queryBuilder.drop().toSQL();
-        await dbInstance.execute(query, values);
-        Logger.systemInfo(`Users table dropped successfully: ${this.tableName}`);
-    }
-
     createSystemUser = async (dbInstance) => {
 
+        // To allow inserting a user with ID 0 (for system user), 
+        // we need to disable the auto-increment check temporarily
         const connection = await dbInstance.getConnection();
         await connection.query(`SET @@session.sql_mode = CONCAT(@@session.sql_mode, ',NO_AUTO_VALUE_ON_ZERO');`);
 
@@ -131,7 +112,6 @@ class UsersTable {
         }
     };
 
-
 }
 
-export { userColumns, UsersTable };
+export default UsersTable;

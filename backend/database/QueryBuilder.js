@@ -1,3 +1,5 @@
+import { trimQuery } from "#database/db.utils";
+
 class QueryBuilder {
 
     dbActions = {
@@ -15,6 +17,10 @@ class QueryBuilder {
         this._table = tableName;
     }
 
+    /**
+     * Reset the query builder to its initial state.
+     * @returns {QueryBuilder}
+     */
     reset() {
         this._type = this.dbActions.SELECT;
         this._fields = ['*'];
@@ -25,12 +31,6 @@ class QueryBuilder {
         this._joins = [];
         this._orderBy = null;
         return this;
-    }
-
-    // TODO secure with quotes
-    addFields(fields) {
-        const quoted = fields.map(field => this.quoteWrap(field));
-        this._fields = [...this._fields, ...quoted];
     }
     //#region Actions
 
@@ -50,33 +50,56 @@ class QueryBuilder {
         return this;
     }
 
-    // .drop() or .drop(true) will generate DROP TABLE table IF EXISTS
+    /**
+     * Drop the table.
+     * .drop() or .drop(true) will generate DROP TABLE table IF EXISTS
+     * @param {boolean} ifExists 
+     * @returns {QueryBuilder}
+     */
     drop(ifExists = true) {
         this._ifExists = ifExists;
         this._type = this.dbActions.DROP;
         return this;
     }
 
-    // .show() will generate SHOW TABLES LIKE 'table'
+    /**
+     * Show the table.
+     * .show() will generate SHOW TABLES LIKE 'table'
+     * @returns {QueryBuilder}
+     */
     show() {
         this._type = this.dbActions.SHOW;
         return this;
     }
 
-    // .select(['id', 'name']) will generate SELECT id, name FROM table
+    /**
+     * Select fields from the table.
+     * .select(['id', 'name']) will generate SELECT id, name FROM table
+     * @param {Array|string} columns 
+     * @returns {QueryBuilder}
+     */
     select(columns = '*') {
         this._fields = Array.isArray(columns) ? columns : [columns];
         this._type = this.dbActions.SELECT;
         return this;
     }
 
-    // .delete() will generate DELETE FROM table
+    /**
+     * Delete rows from the table.
+     * .delete() will generate DELETE FROM table
+     * @returns {QueryBuilder}
+     */
     delete() {
         this._type = this.dbActions.DELETE;
         return this;
     }
 
-    // .update({ name: 'John', age: 30 }) will generate UPDATE table SET name = ?, age = ?
+    /**
+     * Update rows in the table.
+     * .update({ name: 'John', age: 30 }) will generate UPDATE table SET name = ?, age = ?
+     * @param {Object} data 
+     * @returns {QueryBuilder}
+     */
     update(data) {
         this._values = Object.values(data);
         this._fields = Object.keys(data);
@@ -84,7 +107,12 @@ class QueryBuilder {
         return this;
     }
 
-    // .insert({ name: 'John', age: 30 }) will generate INSERT INTO table (name, age) VALUES (?, ?)
+    /**
+     * Insert a new row into the table.
+     * .insert({ name: 'John', age: 30 }) will generate INSERT INTO table (name, age) VALUES (?, ?)
+     * @param {Object} data 
+     * @returns {QueryBuilder}
+     */
     insert(data) {
         this._type = this.dbActions.INSERT;
         this._values = Object.values(data);
@@ -334,15 +362,6 @@ class QueryBuilder {
     //#endregion
     //#region Generate SQL
 
-    quoteWrap(identifier) {
-        if (typeof identifier !== 'string') {
-            throw new Error('Identifier must be a string');
-        }
-        // Split by dot to handle table.column cases
-        const parts = identifier.split('.');
-        return parts.map(part => `\`${part}\``).join('.');
-    }
-
     /**
      * Generate the SQL query string and values array.
      * @returns {{ query: string, values: any[] }} An object containing the SQL query string and the values array.
@@ -394,7 +413,7 @@ class QueryBuilder {
         if (this._limit !== null) {
             sql += ` LIMIT ${this._limit}`;
         }
-        const finalQuery = sql.trim();
+        const finalQuery = trimQuery(sql);
         const finalValues = this._values;
         this.reset();
         return { query: finalQuery, values: finalValues };

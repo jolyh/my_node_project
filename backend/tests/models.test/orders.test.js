@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import Order from "../../models/orders/order.js";
-import orderStatus from "../../models/orders/status.js";
+import Order from "#models/orders/order";
+import orderStatus from "#models/orders/status";
 import { orderToCreate, orderToUpdate } from "./orders.js";
 
 describe("Order model", () => {

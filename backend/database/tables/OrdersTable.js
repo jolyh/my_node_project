@@ -1,9 +1,9 @@
-import { assertValidIdentifier } from "../identifier.js";
-import Logger from '../../utils/Logger.js';
-import QueryBuilder from "../QueryBuilder.js";
-import { AppError, errorTypes } from "../../errors/AppError.js";
+import Logger from '#utils/Logger';
+import QueryBuilder from "#database/QueryBuilder";
+import { AppError, errorTypes } from "#errors/AppError";
+import Table from "#database/tables/Table";
 
-const orderColumns = {
+const ordersColumns = {
     id: {
         query: "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY",
     },
@@ -39,12 +39,12 @@ const orderColumns = {
 };
 
 const ordersConstraints = {
-    fk_user: {
-        query: `CONSTRAINT fk_user 
-        FOREIGN KEY (user_id) 
-        REFERENCES users(id) 
-        ON DELETE SET NULL 
-        ON UPDATE CASCADE`,
+    fk_orders_user: {
+        query: `CONSTRAINT fk_orders_user 
+            FOREIGN KEY (user_id) 
+            REFERENCES users(id) 
+            ON DELETE SET NULL 
+            ON UPDATE CASCADE`,
     },
     toArray: function () {
         return Object.values(this)
@@ -53,19 +53,17 @@ const ordersConstraints = {
     }
 };
 
-class OrdersTable {
+class OrdersTable extends Table {
 
-    static orderColumns = orderColumns;
+    static ordersColumns = ordersColumns;
     static ordersConstraints = ordersConstraints;
 
     constructor(
-        tableName = "orders", 
+        tableName = "orders",
         userTableName = "users"
     ) {
-        assertValidIdentifier(tableName, 'table name');
-        this.tableName = tableName;
+        super(tableName, ordersColumns, ordersConstraints);
         this.userTableName = userTableName;
-        this.queryBuilder = new QueryBuilder(tableName);
     }
 
     setup = async (dbInstance) => {
@@ -84,35 +82,18 @@ class OrdersTable {
     };
 
     checkIfUsersTableExists = async (dbInstance, userTableName) => {
-        const { query: checkQuery, values: checkValues } = new QueryBuilder(userTableName).show().toSQL();
+        const { query: checkQuery, values: checkValues } = new QueryBuilder(userTableName)
+            .show()
+            .toSQL();
         const [result] = await dbInstance.execute(checkQuery, checkValues);
         if (result.length === 0) {
             throw new AppError(
-                errorTypes.CRITICAL.DATABASE_REQUIRED_TABLE_MISSING,
+                errorTypes.DB.REQUIRED_TABLE_MISSING,
                 `Users table does not exist: ${userTableName}. Orders table requires the users table to exist.`
             );
         }
     };
 
-    checkSelfExists = async (dbInstance) => {
-        const { query: checkQuery, values: checkValues } = this.queryBuilder.show().toSQL();
-        const [result] = await dbInstance.execute(checkQuery, checkValues);
-        return result.length > 0;
-    }
-
-    createSelf = async (dbInstance) => {
-        const { query, values } = this.queryBuilder
-            .create(orderColumns.toArray(), ordersConstraints.toArray()).toSQL();
-        await dbInstance.execute(query, values);
-        Logger.systemInfo(`Orders table created successfully: ${this.tableName}`);
-    }
-
-    dropSelf = async (dbInstance) => {
-        const { query, values } = this.queryBuilder.drop().toSQL();
-        await dbInstance.execute(query, values);
-        Logger.systemInfo(`Orders table dropped successfully: ${this.tableName}`);
-    }
-
 }
 
-export { orderColumns, OrdersTable };
+export default OrdersTable;

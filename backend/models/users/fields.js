@@ -1,4 +1,4 @@
-import userRoles from "./roles.js";
+import userRoles from "#models/users/roles";
 
 // Permission -> [editSelf, editOther, visibleSelf, visibleOther]
 // This object defines the minimum role required to edit or view each field
@@ -8,34 +8,34 @@ import userRoles from "./roles.js";
 const userFields = {
     id: {
         type: 'number',
-        permissions: [userRoles.SYSTEM, userRoles.SYSTEM, userRoles.GUEST, userRoles.GUEST],
+        permissions: [userRoles.SYSTEM, userRoles.SYSTEM, userRoles.END_USER, userRoles.END_USER],
         unique: true,
         min: 0, // system should be 0
         max: 9999999999
     },
     name: {
         type: 'string',
-        permissions: [userRoles.GUEST, userRoles.USER, userRoles.GUEST, userRoles.GUEST]
+        permissions: [userRoles.END_USER, userRoles.USER, userRoles.END_USER, userRoles.END_USER]
     },
     email: {
         type: 'string',
-        permissions: [userRoles.GUEST, userRoles.ADMIN, userRoles.GUEST, userRoles.USER]
+        permissions: [userRoles.END_USER, userRoles.ADMIN, userRoles.END_USER, userRoles.USER]
     },
     password: {
         type: 'string',
-        permissions: [userRoles.GUEST, userRoles.SYSTEM, userRoles.GUEST, userRoles.ADMIN]
+        permissions: [userRoles.END_USER, userRoles.SYSTEM, userRoles.END_USER, userRoles.ADMIN]
     },
     role: {
         type: 'number',
-        permissions: [userRoles.ADMIN, userRoles.USER, userRoles.GUEST, userRoles.USER]
+        permissions: [userRoles.ADMIN, userRoles.USER, userRoles.END_USER, userRoles.USER]
     },
     created_at: {
         type: 'string',
-        permissions: [userRoles.SYSTEM, userRoles.SYSTEM, userRoles.GUEST, userRoles.USER]
+        permissions: [userRoles.SYSTEM, userRoles.SYSTEM, userRoles.END_USER, userRoles.USER]
     },
     updated_at: {
         type: 'string',
-        permissions: [userRoles.SYSTEM, userRoles.SYSTEM, userRoles.GUEST, userRoles.USER]
+        permissions: [userRoles.SYSTEM, userRoles.SYSTEM, userRoles.END_USER, userRoles.USER]
     }
 };
 

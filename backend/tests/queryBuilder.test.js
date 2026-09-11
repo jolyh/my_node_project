@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import QueryBuilder from "../database/QueryBuilder.js";
+import QueryBuilder from "#database/QueryBuilder";
 
 describe("QueryBuilder", () => {
 	it("builds a default select query", () => {

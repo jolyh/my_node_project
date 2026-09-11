@@ -1,6 +1,7 @@
-import apiErrors from './apiErrors.js';
-import authErrors from './authErrors.js';
-import criticalErrors from './criticalErrors.js';
+import apiErrors from '#errors/api.errors';
+import authErrors from '#errors/auth.errors';
+import criticalErrors from '#errors/critical.errors';
+import dbErrors from '#errors/db.errors';
 
 class AppError extends Error {
     constructor(errorType, cause = null) {
@@ -19,6 +20,7 @@ const errorTypes = Object.freeze({
     API: apiErrors,
     AUTH: authErrors,
     CRITICAL: criticalErrors,
+    DB: dbErrors
 });
 
 export { AppError, errorTypes };

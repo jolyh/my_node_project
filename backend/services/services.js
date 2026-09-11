@@ -1,30 +1,36 @@
-import UserService from './UserService.js';
-import OrderService from './OrderService.js';
-import AuthService from './AuthService.js';
-import AuditLogService from './AuditLogService.js';
-import { AppError, errorTypes } from '../errors/AppError.js';
+import AuthService from '#services/AuthService';
+import UsersService from '#services/UsersService';
+import OrdersService from '#services/OrdersService';
+import AuditLogsService from '#services/AuditLogsService';
+import TasksService from '#services/TasksService';
+import { AppError, errorTypes } from '#errors/AppError';
 
 const services = async (db, repositories) => {
 
     const services = {};
 
     try {
+
+        
+        // Auth
+        const authService = new AuthService(repositories.usersRepository);
+        services.authService = authService;
     
         // Order
-        const orderService = new OrderService(repositories.orderRepository);
+        const orderService = new OrdersService(repositories.ordersRepository);
         services.orderService = orderService;
 
         // User
-        const userService = new UserService(repositories.userRepository);
+        const userService = new UsersService(repositories.usersRepository);
         services.userService = userService;
 
-        // Auth
-        const authService = new AuthService(repositories.userRepository);
-        services.authService = authService;
-
         // Audit Log
-        const auditLogService = new AuditLogService(repositories.auditLogRepository);
+        const auditLogService = new AuditLogsService(repositories.auditLogsRepository);
         services.auditLogService = auditLogService;
+
+        // Task
+        const taskService = new TasksService(repositories.tasksRepository);
+        services.taskService = taskService;
 
         return services;
 
